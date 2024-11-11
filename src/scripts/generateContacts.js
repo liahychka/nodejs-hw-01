@@ -1,15 +1,19 @@
-import { createFakeContact } from "../utils/createFakeContact";
-import * as fs from "node:fs/promises";
+import { PATH_DB } from "../constants/contacts.js";
+import { createFakeContact } from "../utils/createFakeContact.js";
+import fs from 'fs/promises';
 
-export const generateContacts = (number) => {
+export const generateContacts = async (number) => {
     try {
-        let contacts = JSON.parse(fs.readFileSync('src/db/db.json', 'utf-8'));
+        let contacts = JSON.parse(await fs.readFile(PATH_DB, 'utf8'));
+        
         for (let i = 0; i < number; i++) {
-            contacts.push(createFakeContact());
+            let newContact = createFakeContact();
+            contacts.push(newContact);
         }
-        fs.writeFileSync('src/db/db.json', JSON.stringify(contacts));
+        
+        await fs.writeFile(PATH_DB, JSON.stringify(contacts, null, 2));
     } catch (error) {
-        console.error('An error occurred while generating contacts:', error);
+        console.log('An error occurred:', error);
     }
 };
 
